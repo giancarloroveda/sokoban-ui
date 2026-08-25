@@ -1,0 +1,73 @@
+.board-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-board-bg);
+  border-radius: 12px;
+  overflow: auto;
+}
+
+.board {
+  --cell-size: 44px;
+  display: grid;
+  gap: 2px;
+  background: var(--color-board-bg);
+}
+
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.cell--wall {
+  background: var(--color-wall);
+  border-radius: 3px;
+}
+
+.cell--floor,
+.cell--target,
+.cell--box,
+.cell--box-on-target,
+.cell--player,
+.cell--player-on-target {
+  background: var(--color-floor);
+  border-radius: 3px;
+}
+
+.cell__target {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--color-target);
+}
+
+.cell__box {
+  width: calc(var(--cell-size) - 12px);
+  height: calc(var(--cell-size) - 12px);
+  border-radius: 6px;
+  background: var(--color-box);
+  border: 2px solid var(--color-box-border);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.cell--box-on-target .cell__box {
+  background: var(--color-box-done);
+  border-color: var(--color-box-done-border);
+}
+
+.cell__player {
+  width: calc(var(--cell-size) - 14px);
+  height: calc(var(--cell-size) - 14px);
+  border-radius: 50%;
+  background: var(--color-player);
+}
+
+.cell--player-on-target {
+  box-shadow: inset 0 0 0 3px var(--color-target);
+}

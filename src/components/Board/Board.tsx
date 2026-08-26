@@ -1,5 +1,5 @@
-import { key } from '../game/engine';
-import type { GameState } from '../game/types';
+import { key } from '../../game/engine.ts';
+import type { GameState } from '../../game/types.ts';
 import './Board.css';
 
 interface BoardProps {

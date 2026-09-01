@@ -4,12 +4,16 @@ import type { Direction, GameState, LevelDefinition } from '../game/types';
 
 export type GameStatus = 'playing' | 'won';
 
+/** Intervalo de atualização do cronômetro exibido (RF16). */
+const TIMER_TICK_MS = 200;
+
 export interface UseSokobanResult {
   state: GameState;
   status: GameStatus;
   moveCount: number;
   elapsedMs: number;
   canUndo: boolean;
+  facing: Direction;
   targetsCount: number;
   boxesOnTargetCount: number;
   handleMove: (direction: Direction) => void;
@@ -37,13 +41,14 @@ export function useSokoban(
   const [status, setStatus] = useState<GameStatus>('playing');
   const [elapsedMs, setElapsedMs] = useState(0);
   const [canUndo, setCanUndo] = useState(false);
+  const [isTiming, setIsTiming] = useState(false);
+  const [facing, setFacing] = useState<Direction>('down');
 
   const stateRef = useRef<GameState>(state);
   const historyRef = useRef<GameState[]>([]);
   const moveCountRef = useRef(0);
   const statusRef = useRef<GameStatus>('playing');
   const startTimeRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
 
   // Reseta tudo sempre que o nível selecionado mudar.
   useEffect(() => {
@@ -58,31 +63,24 @@ export function useSokoban(
     setStatus('playing');
     setElapsedMs(0);
     setCanUndo(false);
+    setIsTiming(false);
+    setFacing('down');
   }, [initialState]);
 
   // RF16/RN12 — cronômetro inicia no primeiro movimento válido e para ao concluir o nível.
   useEffect(() => {
-    if (status !== 'playing' || startTimeRef.current === null) {
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
-      return;
-    }
+    if (!isTiming || status !== 'playing') return;
 
     const tick = () => {
       if (startTimeRef.current !== null) {
         setElapsedMs(Date.now() - startTimeRef.current);
       }
-      rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
+    tick();
+    const intervalId = window.setInterval(tick, TIMER_TICK_MS);
 
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+    return () => window.clearInterval(intervalId);
+  }, [isTiming, status]);
 
   const handleMove = useCallback(
     (direction: Direction) => {
@@ -94,7 +92,10 @@ export function useSokoban(
 
       if (startTimeRef.current === null) {
         startTimeRef.current = Date.now();
+        setIsTiming(true);
       }
+
+      setFacing(direction);
 
       historyRef.current.push(prevState);
       moveCountRef.current += 1;
@@ -108,6 +109,7 @@ export function useSokoban(
         const finalTimeMs = Date.now() - (startTimeRef.current ?? Date.now());
         statusRef.current = 'won';
         setStatus('won');
+        setIsTiming(false);
         setElapsedMs(finalTimeMs);
         onWin(moveCountRef.current, finalTimeMs);
       }
@@ -115,16 +117,16 @@ export function useSokoban(
     [onWin],
   );
 
-  // RF06/RN07 — desfaz a última jogada, sem alterar o tempo decorrido.
+  // RF06/RN07 — desfaz a última jogada, sem alterar o tempo decorrido nem a
+  // contagem de movimentos: desfazer é um recurso de ajuda, não apaga a jogada
+  // já contabilizada (do contrário daria para "zerar" o placar desfazendo).
   const undo = useCallback(() => {
     if (statusRef.current !== 'playing') return;
     const last = historyRef.current.pop();
     if (!last) return;
 
     stateRef.current = last;
-    moveCountRef.current = Math.max(0, moveCountRef.current - 1);
     setState(last);
-    setMoveCount(moveCountRef.current);
     setCanUndo(historyRef.current.length > 0);
   }, []);
 
@@ -141,6 +143,8 @@ export function useSokoban(
     setStatus('playing');
     setElapsedMs(0);
     setCanUndo(false);
+    setIsTiming(false);
+    setFacing('down');
   }, [initialState]);
 
   return {
@@ -149,6 +153,7 @@ export function useSokoban(
     moveCount,
     elapsedMs,
     canUndo,
+    facing,
     targetsCount: state.targets.size,
     boxesOnTargetCount: boxesOnTarget(state),
     handleMove,

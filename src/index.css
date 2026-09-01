@@ -19,6 +19,23 @@
   --color-box-done: #16a34a;
   --color-box-done-border: #14532d;
   --color-player: #2563eb;
+  --color-wall-line: #0f172a;
+
+  /* Paleta dos sprites em pixel art (src/components/Sprites.tsx) */
+  --sprite-box-frame: #78350f;
+  --sprite-box-plank: #d97706;
+  --sprite-box-face: #b45309;
+  --sprite-box-done-frame: #14532d;
+  --sprite-box-done-plank: #4ade80;
+  --sprite-box-done-face: #16a34a;
+
+  --sprite-hair: #4a2c14;
+  --sprite-skin: #f2c396;
+  --sprite-eye: #1e293b;
+  --sprite-mouth: #a3492a;
+  --sprite-shirt: #2563eb;
+  --sprite-pants: #1e3a8a;
+  --sprite-shoes: #422006;
 
   color-scheme: light;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;

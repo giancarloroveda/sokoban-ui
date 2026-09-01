@@ -1,4 +1,4 @@
-import { formatMoves, formatTime } from '../utils/format';
+import { formatMoves, formatTime } from '../../utils/format.ts';
 import './Modal.css';
 
 interface WinModalProps {

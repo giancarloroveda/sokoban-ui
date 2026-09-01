@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSokoban } from '../hooks/useSokoban';
-import type { Direction, LevelDefinition, LevelProgress, LevelRecord } from '../game/types';
-import { Board } from './Board';
-import { Sidebar } from './Sidebar';
-import { WinModal } from './WinModal';
-import { RankingsModal } from './RankingsModal';
-import { Header } from './Header';
+import { useSokoban } from '../../hooks/useSokoban.ts';
+import type { Direction, LevelDefinition, LevelProgress, LevelRecord } from '../../game/types.ts';
+import { Board } from '../Board/Board.tsx';
+import { Sidebar } from '../Sidebar/Sidebar.tsx';
+import { WinModal } from '../Modal/WinModal.tsx';
+import { RankingsModal } from '../Modal/RankingsModal.tsx';
+import { Header } from '../Header/Header.tsx';
 import './GameScreen.css';
 
 const KEY_MAP: Record<string, Direction> = {

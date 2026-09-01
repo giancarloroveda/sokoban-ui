@@ -1,5 +1,5 @@
-import type { LevelRecord } from '../game/types';
-import { formatDate, formatMoves, formatTime } from '../utils/format';
+import type { LevelRecord } from '../../game/types.ts';
+import { formatDate, formatMoves, formatTime } from '../../utils/format.ts';
 import './Modal.css';
 
 interface RankingsModalProps {

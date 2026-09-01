@@ -1,6 +1,6 @@
-import { key } from '../game/engine';
-import type { Direction, GameState } from '../game/types';
-import { BoxSprite, PlayerSprite } from './Sprites';
+import { key } from '../../game/engine';
+import type { Direction, GameState } from '../../game/types';
+import { BoxSprite, PlayerSprite } from '../Sprites';
 import './Board.css';
 
 interface BoardProps {

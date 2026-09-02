@@ -67,7 +67,7 @@ export function GameScreen({
     [level.id, recordCompletion],
   );
 
-  const { state, status, moveCount, elapsedMs, canUndo, targetsCount, boxesOnTargetCount, handleMove, undo, restart } =
+  const { state, status, moveCount, elapsedMs, canUndo, facing, targetsCount, boxesOnTargetCount, handleMove, undo, restart } =
     useSokoban(level, handleWin);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export function GameScreen({
     <div className="screen">
       <Header completedCount={completedCount} totalLevels={totalLevels} onOpenLevels={onBackToLevels} />
       <main className="game-screen">
-        <Board state={state} />
+        <Board state={state} facing={facing} />
         <Sidebar
           levelName={level.name}
           levelNumber={levelNumber}

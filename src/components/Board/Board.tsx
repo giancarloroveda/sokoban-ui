@@ -1,6 +1,9 @@
+import { useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { key } from '../../game/engine';
 import type { Direction, GameState } from '../../game/types';
 import { BoxSprite, PlayerSprite } from '../Sprites';
+import { calculateBoardSizing, type BoardSizing } from './boardSizing';
 import './Board.css';
 
 interface BoardProps {
@@ -27,6 +30,43 @@ function getCellKind(state: GameState, row: number, col: number): CellKind {
 }
 
 export function Board({ state, facing }: BoardProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [sizing, setSizing] = useState<BoardSizing>({ cellSize: 44, gap: 2 });
+
+  useLayoutEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const measure = () => {
+      const computedStyle = window.getComputedStyle(wrapper);
+      const horizontalPadding =
+        Number.parseFloat(computedStyle.paddingLeft) + Number.parseFloat(computedStyle.paddingRight);
+      const verticalPadding =
+        Number.parseFloat(computedStyle.paddingTop) + Number.parseFloat(computedStyle.paddingBottom);
+      const nextSizing = calculateBoardSizing({
+        availableWidth: wrapper.clientWidth - horizontalPadding,
+        availableHeight: wrapper.clientHeight - verticalPadding,
+        columns: state.width,
+        rows: state.height,
+        padding: 0,
+      });
+
+      setSizing((current) =>
+        current.cellSize === nextSizing.cellSize && current.gap === nextSizing.gap ? current : nextSizing,
+      );
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
+    observer?.observe(wrapper);
+
+    return () => {
+      window.removeEventListener('resize', measure);
+      observer?.disconnect();
+    };
+  }, [state.height, state.width]);
+
   const cells: CellKind[][] = [];
   for (let row = 0; row < state.height; row++) {
     const rowCells: CellKind[] = [];
@@ -37,13 +77,17 @@ export function Board({ state, facing }: BoardProps) {
   }
 
   return (
-    <div className="board-wrapper">
+    <div ref={wrapperRef} className="board-wrapper">
       <div
         className="board"
-        style={{
-          gridTemplateColumns: `repeat(${state.width}, var(--cell-size))`,
-          gridTemplateRows: `repeat(${state.height}, var(--cell-size))`,
-        }}
+        style={
+          {
+            '--cell-size': `${sizing.cellSize}px`,
+            '--cell-gap': `${sizing.gap}px`,
+            gridTemplateColumns: `repeat(${state.width}, var(--cell-size))`,
+            gridTemplateRows: `repeat(${state.height}, var(--cell-size))`,
+          } as CSSProperties
+        }
       >
         {cells.map((rowCells, row) =>
           rowCells.map((kind, col) => (

@@ -47,7 +47,29 @@ export function SolutionModal({ level, levelName, solution, onClose }: SolutionM
   // que permanecem visualmente cobertos pelo overlay do modal.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key.toLowerCase() === 'escape') {
+      const key = event.key.toLowerCase();
+
+      // Os atalhos repetem exatamente os limites dos botões: o passo nunca
+      // passa do início/fim e a demonstração continua independente da partida.
+      if (key === 'arrowleft') {
+        event.preventDefault();
+        setCurrentStep((step) => Math.max(0, step - 1));
+        return;
+      }
+
+      if (key === 'arrowright') {
+        event.preventDefault();
+        setCurrentStep((step) => Math.min(Math.max(0, playback.length - 1), step + 1));
+        return;
+      }
+
+      if (key === 'r') {
+        event.preventDefault();
+        setCurrentStep(0);
+        return;
+      }
+
+      if (key === 'escape' || key === 'f') {
         if (event.repeat) return;
         event.preventDefault();
         onClose();
@@ -74,7 +96,7 @@ export function SolutionModal({ level, levelName, solution, onClose }: SolutionM
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+  }, [onClose, playback.length]);
 
   if (solution.status !== 'solved') {
     return (

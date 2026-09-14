@@ -65,4 +65,38 @@ describe('SolutionModal', () => {
     expect(document.activeElement).toBe(opener);
     opener.remove();
   });
+
+  it('navega entre os passos usando as setas esquerda e direita', async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByText('Passo 1 de 1')).toBeTruthy();
+
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByText('Passo 0 de 1')).toBeTruthy();
+  });
+
+  it('reinicia a demonstração com a tecla R', async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.keyboard('{ArrowRight}');
+    await user.keyboard('r');
+
+    expect(screen.getByText('Passo 0 de 1')).toBeTruthy();
+  });
+
+  it.each([
+    ['f', 'a tecla F'],
+    ['{Escape}', 'a tecla Escape'],
+  ])('fecha a demonstração com %s', async (key, _description) => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    renderModal(onClose);
+
+    await user.keyboard(key);
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
 });

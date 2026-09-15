@@ -49,8 +49,6 @@ export function SolutionModal({ level, levelName, solution, onClose }: SolutionM
     function onKeyDown(event: KeyboardEvent) {
       const key = event.key.toLowerCase();
 
-      // Os atalhos repetem exatamente os limites dos botões: o passo nunca
-      // passa do início/fim e a demonstração continua independente da partida.
       if (key === 'arrowleft') {
         event.preventDefault();
         setCurrentStep((step) => Math.max(0, step - 1));

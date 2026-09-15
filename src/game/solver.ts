@@ -4,7 +4,7 @@ import { isWin, key, move } from './engine';
 import type { Direction, GameState, Position } from './types';
 
 /** Limite de segurança para que uma busca excepcionalmente grande não congele a interface. */
-export const DEFAULT_MAX_EXPANDED_NODES = 200_000_000;
+export const DEFAULT_MAX_EXPANDED_NODES = 200_000;
 
 export type SolutionResult =
   | { status: 'solved'; directions: Direction[]; expandedNodes: number }
